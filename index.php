@@ -1,5 +1,7 @@
 <html lang="en">
-
+<?php
+    //good one!
+?>
 <head>
     <title>Yuki-chan!</title>
     <meta charset="UTF-8">
