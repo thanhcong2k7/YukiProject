@@ -15,14 +15,14 @@
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://yuki.auroramusicvietnam.net/">
-    <meta property="og:title" content="Yuki-chan! Người bạn AI Live2D của bạn">
+    <meta property="og:title" content="Yuki-chan!">
     <meta property="og:description" content="Tương tác với Yuki-chan, người bạn AI tương tác của bạn được cung cấp bởi Live2D và Gemini AI. Trải nghiệm trò chuyện, biểu cảm và tương tác động trong thời gian thực.">
     <meta property="og:image" content="https://yuki.auroramusicvietnam.net/assets/favicon.png">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://yuki.auroramusicvietnam.net/">
-    <meta property="twitter:title" content="Yuki-chan! Người bạn AI Live2D của bạn">
+    <meta property="twitter:title" content="Yuki-chan!">
     <meta property="twitter:description" content="Tương tác với Yuki-chan, người bạn AI tương tác của bạn được cung cấp bởi Live2D và Gemini AI. Trải nghiệm trò chuyện, biểu cảm và tương tác động trong thời gian thực.">
     <meta property="twitter:image" content="https://yuki.auroramusicvietnam.net/assets/favicon.png">
     

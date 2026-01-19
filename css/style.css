@@ -113,3 +113,59 @@ canvas {
     margin: 0 auto;
     padding: 45px;
 }
+
+/* Mobile Landscape Scaling */
+@media screen and (max-height: 600px) and (orientation: landscape) {
+    /* Scale Sidebar */
+    #app-sidebar {
+        transform: scale(0.65);
+        transform-origin: top left;
+        height: 153.8vh !important; /* 100 / 0.65 */
+        width: 320px !important; /* Increase width so when scaled it looks normal-ish or just keep it */
+    }
+    
+    #app-sidebar.collapsed {
+        width: 90px !important;
+    }
+
+    /* Scale Chatbox */
+    #ai-widget-container {
+        transform: scale(0.65);
+        transform-origin: right center;
+        right: 10px !important;
+        top: 10px !important;
+        bottom: 10px !important;
+        height: auto !important; /* Let top/bottom control it */
+        width: 450px !important; /* Wider base width */
+    }
+
+    /* Scale Music Player */
+    #custom-music-player {
+        /* Maintain center X translation while scaling */
+        transform: translateX(-50%) scale(0.65) !important; 
+        transform-origin: center bottom;
+        bottom: 5px !important;
+        min-width: 300px !important;
+    }
+
+    /* Scale Clock */
+    #floating-clock-container {
+        transform: translateX(-50%) scale(0.65) !important;
+        transform-origin: center top;
+        top: 5px !important;
+    }
+
+    /* Scale Emote Bar */
+    #emote-bar {
+        transform-origin: center top;
+    }
+    #emote-bar.visible {
+        transform: translateX(-50%) translateY(0) scale(0.65) !important;
+    }
+    #emote-bar:not(.visible) {
+         transform: translateX(-50%) translateY(-100px) scale(0.65) !important;
+    }
+
+    /* Adjust font sizes/padding inside if scaling isn't enough, 
+       but scaling is usually the brute-force way that works for "fitting in". */
+}

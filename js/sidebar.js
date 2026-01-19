@@ -715,6 +715,7 @@
                     
                     <div id="sect-about" class="settings-section">
                         <div style="text-align: center; margin-bottom: 20px;">
+                            <img style="width: 120px; height: auto" src="assets/favicon.png" alt="Thumb">
                             <h2 style="margin: 0; color: #fff; font-weight: 700; letter-spacing: 1px;">Yuki Project</h2>
                             <p style="margin: 5px 0 0; color: #00C6FF; font-size: 13px;">Simply a hobbyist project.</p>
                         </div>
