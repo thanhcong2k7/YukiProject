@@ -2,6 +2,8 @@
     // --- CSS ---
     const style = document.createElement('style');
     style.innerHTML = `
+        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Inter:wght@300;500&family=JetBrains+Mono:wght@500&family=Playfair+Display:wght@600&family=Orbitron:wght@500&display=swap');
+        
         /* Sidebar container */
         #app-sidebar {
             position: fixed;
@@ -35,6 +37,174 @@
             margin-right: 5px;
         }
         #sidebar-collapse-btn:hover { color: #fff; }
+
+        /* --- Custom Music Player (Floating Bottom Bar) --- */
+        #custom-music-player {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: auto;
+            min-width: 400px;
+            max-width: 90%;
+            height: auto;
+            background: rgba(20, 20, 20, 0.85);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 15px 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 9500;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        #custom-music-player:hover {
+            transform: translateX(-50%) translateY(-2px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .player-main { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between;
+            width: 100%;
+        }
+        
+        .player-thumbnail {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            animation: spin 10s linear infinite;
+            animation-play-state: paused;
+        }
+        .player-thumbnail.playing {
+            animation-play-state: running;
+            border-color: #00C6FF;
+        }
+        
+        .track-info { 
+            text-align: left; 
+            width: 140px; 
+            overflow: hidden; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .track-title { 
+            font-size: 14px; 
+            font-weight: bold; 
+            color: #fff; 
+            white-space: nowrap; 
+            display: block; 
+        }
+        .track-title.scrolling { animation: marquee 10s linear infinite; }
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        
+        .player-controls { display: flex; gap: 15px; align-items: center; margin: 0; }
+        .player-controls button {
+            background: none; border: none; color: #ccc; cursor: pointer; transition: all 0.2s; font-size: 20px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .player-controls button:hover { color: #fff; transform: scale(1.1); }
+        .player-controls button.active { color: #00C6FF; }
+        #btn-play { 
+            font-size: 32px; 
+            color: #fff; 
+            background: rgba(255,255,255,0.1);
+            width: 45px; height: 45px; border-radius: 50%;
+        }
+        #btn-play:hover { background: rgba(255,255,255,0.2); }
+
+        .progress-container { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            font-size: 11px; 
+            color: #888; 
+            width: 100%;
+        }
+        .progress-bar-bg { flex-grow: 1; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; position: relative; cursor: pointer; overflow: hidden; }
+        .progress-bar-fill { width: 0%; height: 100%; background: #00C6FF; border-radius: 2px; transition: width 0.1s linear; }
+
+        /* --- Sidebar Playlist Area --- */
+        #playlist-sidebar-container {
+            padding: 15px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .collapsed #playlist-sidebar-container { display: none; }
+
+        .playlist-input-container {
+            display: flex;
+            gap: 5px;
+        }
+        #yt-playlist-input {
+            flex: 1;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #eee;
+            padding: 6px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        #yt-playlist-input:focus { border-color: #00C6FF; }
+        
+        #btn-load-yt {
+            background: #333;
+            border: none;
+            color: #fff;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px;
+            transition: background 0.2s;
+        }
+        #btn-load-yt:hover { background: #00C6FF; }
+
+        .player-playlist {
+            max-height: 200px;
+            overflow-y: auto;
+            display: flex; flex-direction: column; gap: 4px;
+            scrollbar-width: thin; scrollbar-color: #444 transparent;
+        }
+        .playlist-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 6px 10px; border-radius: 8px;
+            cursor: pointer; transition: background 0.2s;
+        }
+        .pi-thumb {
+            width: 40px; height: 40px; object-fit: cover; border-radius: 4px; flex-shrink: 0;
+        }
+        .playlist-item:hover { background: rgba(255,255,255,0.05); }
+        .playlist-item.active { background: rgba(0, 198, 255, 0.15); }
+        .playlist-item.active .pi-title { color: #00C6FF; }
+        
+        .collapsed #player-playlist .pi-info,
+        .collapsed #player-playlist .pi-duration { display: none; }
+        .collapsed #player-playlist .playlist-item { justify-content: center; padding: 6px 0; }
+        .collapsed #player-playlist .pi-thumb { margin: 0; }
+        
+        .pi-info { display: flex; flex-direction: column; overflow: hidden; width: 100%; }
+        .pi-title { font-size: 12px; color: #ddd; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .pi-artist { font-size: 10px; color: #777; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .pi-duration { margin-left: auto; font-size: 10px; color: #555; display: none; } /* Hide duration in list for cleaner look */
+
 
         /* Sidebar Header (New Chat) */
         .sidebar-header {
@@ -284,6 +454,113 @@
         .emote-btn:hover { background: #444; transform: translateY(-2px); }
         .emote-btn:active { transform: scale(0.95); }
 
+        /* --- Floating Clock --- */
+        #floating-clock-container {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: row; /* Side by side */
+            align-items: center;
+            gap: 20px;
+            background: rgba(20, 20, 20, 0.75);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 15px 25px;
+            border-radius: 20px;
+            color: #fff;
+            z-index: 8000;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: opacity 0.3s, visibility 0.3s;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+            pointer-events: none; /* Allow clicking through */
+            font-family: 'Inter', sans-serif; /* Default */
+        }
+        #floating-clock-container.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* Columns */
+        .clock-left-col {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+        }
+        .clock-right-col {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-left: 1px solid rgba(255,255,255,0.1);
+            padding-left: 30px;
+        }
+        
+        /* Visibility helpers */
+        #floating-clock-container.hide-time .clock-left-col { display: none; }
+        #floating-clock-container.hide-cal .clock-right-col { display: none; }
+        /* Remove border if one is hidden */
+        #floating-clock-container.hide-time .clock-right-col { border-left: none; padding-left: 0; }
+
+
+        .clock-time {
+            font-size: 48px;
+            font-weight: 500;
+            letter-spacing: -1px;
+            line-height: 1;
+            margin-bottom: 5px;
+            background: linear-gradient(to bottom, #fff, #bbb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .clock-date {
+            font-size: 16px;
+            color: #ccc;
+            margin-bottom: 8px;
+            font-weight: 400;
+        }
+        .clock-weather {
+            font-size: 14px;
+            color: #00C6FF;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+        
+        /* Mini Calendar */
+        #mini-calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 8px;
+            border-radius: 10px;
+        }
+        .cal-header {
+            font-size: 10px;
+            color: #888;
+            font-weight: 600;
+            padding-bottom: 4px;
+        }
+        .cal-day {
+            font-size: 11px;
+            color: #ddd;
+            width: 20px;
+            height: 20px;
+            line-height: 20px;
+            border-radius: 4px;
+        }
+        .cal-day.today {
+            background: #00C6FF;
+            color: #fff;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(0, 198, 255, 0.3);
+        }
+        .cal-day.empty { background: none; }
+
     `;
     document.head.appendChild(style);
 
@@ -299,11 +576,40 @@
                 <span><i class="bi bi-plus-lg"></i></span> <span>Đoạn chat mới</span>
             </button>
         </div>
+
+        <!-- Moved Music Player Here -->
+        <div id="custom-music-player">
+            <div class="player-main">
+                <div style="display:flex; align-items:center; gap:15px;">
+                    <img id="player-thumbnail" class="player-thumbnail" src="assets/favicon.png" alt="Thumb">
+                    <div class="track-info">
+                        <div class="track-title" id="player-title">Not Playing</div>
+                        <div class="track-artist" id="player-artist">...</div>
+                    </div>
+                </div>
+                <div class="player-controls">
+                    <button id="btn-shuffle" title="Shuffle"><i class="bi bi-shuffle"></i></button>
+                    <button id="btn-prev" title="Previous"><i class="bi bi-skip-start-fill"></i></button>
+                    <button id="btn-play" title="Play"><i class="bi bi-play-fill"></i></button>
+                    <button id="btn-next" title="Next"><i class="bi bi-skip-end-fill"></i></button>
+                    <button id="btn-loop" title="Loop"><i class="bi bi-repeat"></i></button>
+                </div>
+            </div>
+            <div class="progress-container">
+                <span class="time-text" id="curr-time">0:00</span>
+                <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill"></div></div>
+                <span class="time-text" id="total-time">0:00</span>
+            </div>
+        </div>
         <div class="sidebar-nav">
             <div class="nav-label">Gần đây</div>
             <div class="nav-item active">
                 <span><i class="bi bi-chat-dots-fill"></i></span> <span>Cuộc trò chuyện hiện tại</span>
             </div>
+        </div>
+        <div id="playlist-header-label" class="nav-label" style="padding: 0 15px; margin-top: 10px;">Playlist</div>
+        <div class="player-playlist" id="player-playlist" style="border-top: 1px solid #333; padding: 10px;">
+            <!-- Playlist generated by JS -->
         </div>
         <div class="sidebar-footer">
             <button class="footer-btn" id="btn-settings" title="Settings">
@@ -311,6 +617,9 @@
             </button>
             <button class="footer-btn" id="btn-emotes" title="Emotes">
                 <span><i class="bi bi-emoji-smile-fill"></i></span> <span>Biểu cảm</span>
+            </button>
+            <button class="footer-btn" id="btn-fullscreen" title="Fullscreen">
+                <span><i class="bi bi-arrows-fullscreen"></i></span> <span>Toàn màn hình</span>
             </button>
         </div>
     `;
@@ -328,6 +637,7 @@
             <div class="modal-body">
                 <div class="settings-sidebar">
                     <button class="settings-cat-btn active" data-target="sect-background"><i class="bi bi-image"></i> Appearance</button>
+                    <button class="settings-cat-btn" data-target="sect-music"><i class="bi bi-music-note-beamed"></i> Music</button>
                     <button class="settings-cat-btn" data-target="sect-about"><i class="bi bi-info-circle"></i> About</button>
                 </div>
                 <div class="settings-content">
@@ -337,6 +647,69 @@
                         <div style="margin-top: 15px; display: flex; gap: 10px;">
                             <input type="text" id="custom-bg-input" placeholder="Paste image URL..." style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #2a2a2a; color: #fff; font-size: 14px;">
                             <button id="btn-custom-bg" style="padding: 10px 20px; background: #00C6FF; border: none; border-radius: 6px; color: #fff; cursor: pointer; font-weight: 500;">Set</button>
+                        </div>
+                        
+                        <div style="margin-top: 20px; border-top: 1px solid #333; padding-top: 15px;">
+                            <div class="modal-section-title" style="font-size: 16px;">Widgets</div>
+                            
+                            <div style="margin-bottom: 15px;">
+                                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: #eee; margin-bottom: 8px;">
+                                    <input type="checkbox" id="toggle-clock-widget"> Enable Widget
+                                </label>
+                            </div>
+
+                            <div id="widget-settings-panel" style="padding-left: 10px; border-left: 2px solid #333; display: flex; flex-direction: column; gap: 15px;">
+                                <!-- Font -->
+                                <div>
+                                    <label style="display:block; color:#aaa; font-size:12px; margin-bottom:5px;">Font Style</label>
+                                    <select id="clock-font-select" style="background:#2a2a2a; color:#fff; border:1px solid #444; padding:8px; border-radius:4px; width:100%; outline:none;">
+                                        <option value="'Inter', sans-serif">Modern (Inter)</option>
+                                        <option value="'JetBrains Mono', monospace">Digital (Mono)</option>
+                                        <option value="'Playfair Display', serif">Elegant (Serif)</option>
+                                        <option value="'Caveat', cursive">Handwritten</option>
+                                        <option value="'Orbitron', sans-serif">Retro Sci-Fi</option>
+                                    </select>
+                                </div>
+
+                                <!-- Components -->
+                                <div>
+                                    <label style="display:block; color:#aaa; font-size:12px; margin-bottom:5px;">Visibility</label>
+                                    <div style="display: flex; gap: 20px;">
+                                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: #ccc; font-size: 13px;">
+                                            <input type="checkbox" id="toggle-clock-time" checked> Time & Weather
+                                        </label>
+                                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: #ccc; font-size: 13px;">
+                                            <input type="checkbox" id="toggle-clock-cal" checked> Calendar
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Format -->
+                                <div>
+                                    <label style="display:block; color:#aaa; font-size:12px; margin-bottom:5px;">Time Format</label>
+                                    <div style="display: flex; gap: 20px;">
+                                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: #ccc; font-size: 13px;">
+                                            <input type="radio" name="clock-fmt" value="12"> 12H
+                                        </label>
+                                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: #ccc; font-size: 13px;">
+                                            <input type="radio" name="clock-fmt" value="24" checked> 24H
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="sect-music" class="settings-section">
+                        <div class="modal-section-title"><i class="fa-brands fa-youtube"></i>YouTube Music</div>
+                        <div style="margin-bottom: 15px;">
+                            <label style="display:block; color:#aaa; font-size:13px; margin-bottom:5px;">YouTube URL</label>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" id="yt-playlist-input" placeholder="e.g., PLMC9KNkIncK..." style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #2a2a2a; color: #fff; font-size: 14px;">
+                                <button id="btn-save-yt" style="padding: 10px 20px; background: #ff0000; border: none; border-radius: 6px; color: #fff; cursor: pointer; font-weight: 500;">Load</button>
+                            </div>
+                            <p style="color:#666; font-size:12px; margin-top:5px;">Dán link tới playlist hoặc video YouTube để load danh sách.</p>
+                            <p style="color:#666; font-size:12px; margin-top:5px;">API powered by Aurora Music Vietnam.</p>
                         </div>
                     </div>
                     
@@ -352,7 +725,7 @@
                                 <div style="color: #eee;">0.36.18-alpha</div>
                                 
                                 <div style="color: #888;">Model</div>
-                                <div style="color: #eee;">Vivian (<a href="https://booth.pm/en/items/7811941" style="color: #00C6FF; text-decoration: none;">Booth.pm</a>)</div>
+                                <div style="color: #eee;">Vivian (<a href="https://booth.pm/en/items/7811941" style="color: #00C6FF; text-decoration: none;">booth.pm</a>)</div>
                                 
                                 <div style="color: #888;">Engine</div>
                                 <div style="color: #eee;">PixiJS + Live2D SDK</div>
@@ -383,6 +756,21 @@
     const emoteBar = document.createElement('div');
     emoteBar.id = 'emote-bar';
     document.body.appendChild(emoteBar);
+
+    // 4. Floating Clock
+    const clockDiv = document.createElement('div');
+    clockDiv.id = 'floating-clock-container';
+    clockDiv.innerHTML = `
+        <div class="clock-left-col">
+            <div class="clock-time" id="clock-time">00:00</div>
+            <div class="clock-date" id="clock-date">Mon, Jan 1</div>
+            <div class="clock-weather" id="clock-weather"><i class="bi bi-cloud"></i> Loading...</div>
+        </div>
+        <div class="clock-right-col">
+            <div id="mini-calendar"></div>
+        </div>
+    `;
+    document.body.appendChild(clockDiv);
 
     // --- Logic ---
 
@@ -481,6 +869,57 @@
             document.body.style.background = 'url("./assets/bg1.jpg")';
             document.body.style.backgroundSize = "cover";
         }
+
+        // Clock Widget
+        const isClockEnabled = localStorage.getItem('yuki_clock_enabled') !== 'false'; // Default true
+        const toggleClock = document.getElementById('toggle-clock-widget');
+        const clock = document.getElementById('floating-clock-container');
+        const panel = document.getElementById('widget-settings-panel');
+        
+        if (toggleClock) toggleClock.checked = isClockEnabled;
+        
+        // Initialize panel state based on enabled status
+        if (panel) {
+            if (isClockEnabled) {
+                panel.style.opacity = '1';
+                panel.style.pointerEvents = 'auto';
+            } else {
+                panel.style.opacity = '0.5';
+                panel.style.pointerEvents = 'none';
+            }
+        }
+
+        if (clock) {
+            if (!isClockEnabled) {
+                clock.classList.add('hidden');
+            } else {
+                clock.classList.remove('hidden');
+            }
+        }
+        
+        // Load Font
+        const savedFont = localStorage.getItem('yuki_clock_font');
+        const fontSel = document.getElementById('clock-font-select');
+        if(savedFont && fontSel) fontSel.value = savedFont;
+        
+        // Load Sub Toggles
+        const savedShowTime = localStorage.getItem('yuki_show_time') !== 'false';
+        const savedShowCal = localStorage.getItem('yuki_show_cal') !== 'false';
+        
+        const togTime = document.getElementById('toggle-clock-time');
+        const togCal = document.getElementById('toggle-clock-cal');
+        if(togTime) togTime.checked = savedShowTime;
+        if(togCal) togCal.checked = savedShowCal;
+        
+        // Load Format
+        const savedFmt = localStorage.getItem('yuki_time_format');
+        if(savedFmt) {
+            const rad = document.querySelector(`input[name="clock-fmt"][value="${savedFmt}"]`);
+            if(rad) rad.checked = true;
+        }
+
+        // Apply visual
+        applyWidgetSettings();
     }
 
     // Toggle Sidebar Function
@@ -586,6 +1025,22 @@
         }
     });
 
+    // Fullscreen Logic
+    const btnFullscreen = document.getElementById('btn-fullscreen');
+    if (btnFullscreen) {
+        btnFullscreen.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.error(`Error attempting to enable fullscreen: ${err.message}`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        });
+    }
+
     // Vivian Emotions (mapped from filenames)
     const emotions = [
         { name: 'Reset', file: null },
@@ -640,6 +1095,193 @@
         }
     }
 
+    // --- Clock & Weather Logic ---
+    function updateClock() {
+        const now = new Date();
+        
+        // 12/24H Format
+        const is12H = localStorage.getItem('yuki_time_format') === '12';
+        const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: is12H };
+        const timeStr = now.toLocaleTimeString([], timeOptions);
+        
+        const dateStr = now.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
+        
+        const timeEl = document.getElementById('clock-time');
+        const dateEl = document.getElementById('clock-date');
+        
+        if (timeEl) timeEl.innerText = timeStr;
+        if (dateEl) dateEl.innerText = dateStr;
+        
+        // Update calendar once a minute (or if date changes)
+        if (!window.lastCalDate || window.lastCalDate !== now.getDate()) {
+            renderCalendar(now);
+            window.lastCalDate = now.getDate();
+        }
+    }
+
+    function renderCalendar(date) {
+        const cal = document.getElementById('mini-calendar');
+        if (!cal) return;
+
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        const today = date.getDate();
+
+        // Days in month
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        // First day of week (0 = Sun, 1 = Mon...)
+        const firstDay = new Date(year, month, 1).getDay();
+
+        let html = '';
+        
+        // Headers
+        const days = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+        days.forEach(d => html += `<div class="cal-header">${d}</div>`);
+
+        // Empty slots
+        for (let i = 0; i < firstDay; i++) {
+            html += `<div class="cal-day empty"></div>`;
+        }
+
+        // Days
+        for (let i = 1; i <= daysInMonth; i++) {
+            const isToday = i === today ? 'today' : '';
+            html += `<div class="cal-day ${isToday}">${i}</div>`;
+        }
+
+        cal.innerHTML = html;
+    }
+    
+    // Function to apply visual widget settings (font, visibility)
+    function applyWidgetSettings() {
+        const container = document.getElementById('floating-clock-container');
+        if (!container) return;
+        
+        // Font
+        const font = localStorage.getItem('yuki_clock_font') || "'Inter', sans-serif";
+        container.style.fontFamily = font;
+        
+        // Some fonts look better smaller/larger? (Optional tweaks)
+        const timeEl = document.getElementById('clock-time');
+        if (timeEl) {
+             // Apply font to time specifically if needed
+             timeEl.style.fontFamily = font; 
+        }
+
+        // Sub-visibility
+        const showTime = localStorage.getItem('yuki_show_time') !== 'false';
+        const showCal = localStorage.getItem('yuki_show_cal') !== 'false';
+        
+        if (showTime) container.classList.remove('hide-time');
+        else container.classList.add('hide-time');
+        
+        if (showCal) container.classList.remove('hide-cal');
+        else container.classList.add('hide-cal');
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock(); // Initial call
+
+    async function fetchWeather() {
+        const weatherEl = document.getElementById('clock-weather');
+        if (!weatherEl) return;
+        
+        // Helper to update UI
+        const updateUI = async (lat, lon) => {
+             try {
+                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+                const data = await res.json();
+                if(data.current_weather) {
+                    const temp = Math.round(data.current_weather.temperature);
+                    const code = data.current_weather.weathercode;
+                    // Map code to icon (simplified)
+                    let icon = 'bi-cloud';
+                    if (code <= 1) icon = 'bi-sun';
+                    else if (code <= 3) icon = 'bi-cloud-sun';
+                    else if (code <= 67) icon = 'bi-cloud-rain';
+                    else if (code <= 99) icon = 'bi-cloud-lightning-rain';
+                    
+                    weatherEl.innerHTML = `<i class="bi ${icon}"></i> ${temp}°C`;
+                }
+            } catch(e) { console.error("Weather fetch error:", e); }
+        };
+
+        // Try geolocation
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => updateUI(position.coords.latitude, position.coords.longitude),
+                (err) => {
+                    // Default to Ho Chi Minh City if denied/error
+                    console.warn("Geolocation denied/error, defaulting to HCMC.");
+                    updateUI(10.8231, 106.6297);
+                }
+            );
+        } else {
+             updateUI(10.8231, 106.6297);
+        }
+    }
+    
+    // Fetch weather initially and every 30 mins
+    setTimeout(fetchWeather, 1000); // Slight delay
+    setInterval(fetchWeather, 30 * 60 * 1000);
+
+    // Clock Toggle Logic & Settings Listeners
+    const toggleClock = document.getElementById('toggle-clock-widget');
+    if (toggleClock) {
+        toggleClock.addEventListener('change', (e) => {
+            const isChecked = e.target.checked;
+            const clock = document.getElementById('floating-clock-container');
+            const panel = document.getElementById('widget-settings-panel');
+            if (clock) {
+                if (isChecked) {
+                    clock.classList.remove('hidden');
+                    if(panel) { panel.style.opacity = '1'; panel.style.pointerEvents = 'auto'; }
+                } else {
+                    clock.classList.add('hidden');
+                    if(panel) { panel.style.opacity = '0.5'; panel.style.pointerEvents = 'none'; }
+                }
+            }
+            localStorage.setItem('yuki_clock_enabled', isChecked);
+        });
+    }
+    
+    // Font Select
+    const fontSelect = document.getElementById('clock-font-select');
+    if (fontSelect) {
+        fontSelect.addEventListener('change', (e) => {
+            localStorage.setItem('yuki_clock_font', e.target.value);
+            applyWidgetSettings();
+        });
+    }
+    
+    // Sub Toggles
+    const toggleTime = document.getElementById('toggle-clock-time');
+    if (toggleTime) {
+        toggleTime.addEventListener('change', (e) => {
+            localStorage.setItem('yuki_show_time', e.target.checked);
+            applyWidgetSettings();
+        });
+    }
+    
+    const toggleCal = document.getElementById('toggle-clock-cal');
+    if (toggleCal) {
+        toggleCal.addEventListener('change', (e) => {
+            localStorage.setItem('yuki_show_cal', e.target.checked);
+            applyWidgetSettings();
+        });
+    }
+    
+    // Format Radio
+    const formatRadios = document.querySelectorAll('input[name="clock-fmt"]');
+    formatRadios.forEach(r => {
+        r.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                localStorage.setItem('yuki_time_format', e.target.value);
+                updateClock();
+            }
+        });
+    });
+
     // Global actions
     window.triggerExpression = triggerExpression;
 
@@ -655,6 +1297,519 @@
     window.getSidebarWidth = function () {
         return sidebar.classList.contains('collapsed') ? 70 : 260;
     };
+
+    // --- Music Player Logic (YouTube Integration) ---
+    const BACKEND_API_URL = 'https://yukibackend.onrender.com/api/playlist'; // User provided backend API URL
+    
+    // Inject YouTube API
+    if (!document.getElementById('yt-api-script')) {
+        const tag = document.createElement('script');
+        tag.id = 'yt-api-script';
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    }
+
+    window.onYouTubeIframeAPIReady = function() {
+        musicPlayer.initYouTube();
+    };
+
+    const musicPlayer = {
+        currentId: localStorage.getItem('yuki_yt_id') || 'PLOzDu-MXXLlg5384VEAWMzgXSdU8HFwbS',
+        currentType: localStorage.getItem('yuki_yt_type') || 'playlist', // 'playlist' or 'video'
+        ytPlayer: null,
+        updateTimer: null,
+        isPlaying: false,
+        isLooping: false,
+        isShuffling: false,
+        tracks: [], // Store full track data from backend
+        
+        elements: {
+             get title() { return document.getElementById('player-title'); },
+             get artist() { return document.getElementById('player-artist'); },
+             get playBtn() { return document.getElementById('btn-play'); },
+             get prevBtn() { return document.getElementById('btn-prev'); },
+             get nextBtn() { return document.getElementById('btn-next'); },
+             get shuffleBtn() { return document.getElementById('btn-shuffle'); },
+             get loopBtn() { return document.getElementById('btn-loop'); },
+             get playlistContainer() { return document.getElementById('player-playlist'); },
+             get currTime() { return document.getElementById('curr-time'); },
+             get totalTime() { return document.getElementById('total-time'); },
+             get progressFill() { return document.getElementById('progress-fill'); },
+             get progressBarBg() { return document.querySelector('.progress-bar-bg'); }
+        },
+
+        init() {
+            // Load ID into input
+            const input = document.getElementById('yt-playlist-input');
+            if(input) input.value = this.currentId;
+
+            // Create hidden player div if not exists
+            if (!document.getElementById('yt-player-hidden')) {
+                const playerDiv = document.createElement('div');
+                playerDiv.id = 'yt-player-hidden';
+                playerDiv.style.display = 'none'; // Keep it hidden
+                document.body.appendChild(playerDiv);
+            }
+            
+            // Listeners
+            if(this.elements.playBtn) this.elements.playBtn.onclick = () => this.togglePlay();
+            if(this.elements.prevBtn) this.elements.prevBtn.onclick = () => this.prevTrack();
+            if(this.elements.nextBtn) this.elements.nextBtn.onclick = () => this.nextTrack();
+            if(this.elements.shuffleBtn) this.elements.shuffleBtn.onclick = () => this.toggleShuffle();
+            if(this.elements.loopBtn) this.elements.loopBtn.onclick = () => this.toggleLoop();
+            
+            // Progress Bar Seek
+            if (this.elements.progressBarBg) {
+                this.elements.progressBarBg.addEventListener('click', (e) => {
+                    if (!this.ytPlayer || !this.ytPlayer.seekTo) return;
+                    const rect = this.elements.progressBarBg.getBoundingClientRect();
+                    const clickX = e.clientX - rect.left;
+                    const width = rect.width;
+                    const percentage = clickX / width;
+                    const duration = this.ytPlayer.getDuration();
+                    if (duration) {
+                        this.ytPlayer.seekTo(duration * percentage, true);
+                    }
+                });
+            }
+
+            // Load Button (Sidebar)
+            const loadBtn = document.getElementById('btn-load-yt');
+            if(loadBtn) {
+                loadBtn.onclick = async () => {
+                    const inputVal = document.getElementById('yt-playlist-input').value.trim();
+                    if(inputVal) {
+                        const result = this.extractInputData(inputVal);
+                        if (result) {
+                            if (result.id !== this.currentId) {
+                                this.currentId = result.id;
+                                this.currentType = result.type;
+                                localStorage.setItem('yuki_yt_id', result.id);
+                                localStorage.setItem('yuki_yt_type', result.type);
+                                await this.loadMedia(result.id, result.type);
+                                alert(`YouTube ${result.type === 'playlist' ? 'Playlist' : 'Video'} loaded!`);
+                            } else {
+                                alert("Media is already loaded.");
+                            }
+                        } else {
+                            alert("Please enter a valid YouTube Playlist/Video URL or ID.");
+                        }
+                    }
+                };
+            }
+            
+            // Add debounced input listener for auto-loading
+            const inputYtPlaylist = document.getElementById('yt-playlist-input');
+            let debounceTimer;
+            if (inputYtPlaylist) {
+                inputYtPlaylist.addEventListener('input', () => {
+                    clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(async () => {
+                        const inputValue = inputYtPlaylist.value.trim();
+                        if (inputValue) {
+                            const result = this.extractInputData(inputValue);
+                            if (result && result.id !== this.currentId) {
+                                console.log(`Auto-loading new ${result.type}:`, result.id);
+                                this.currentId = result.id;
+                                this.currentType = result.type;
+                                localStorage.setItem('yuki_yt_id', result.id);
+                                localStorage.setItem('yuki_yt_type', result.type);
+                                await this.loadMedia(result.id, result.type);
+                            }
+                        }
+                    }, 2000); 
+                });
+            }
+            
+            // Initial load
+            if (window.YT && window.YT.Player) {
+                this.initYouTube();
+            }
+        },
+
+        initYouTube() {
+            if (!this.ytPlayer && window.YT && window.YT.Player) {
+                this.ytPlayer = new YT.Player('yt-player-hidden', {
+                    height: '0',
+                    width: '0',
+                    playerVars: {
+                        'playsinline': 1,
+                        'autoplay': 1, // Auto-play on load
+                        'controls': 0,
+                        'disablekb': 1,
+                        'modestbranding': 1,
+                        'rel': 0
+                    },
+                    events: {
+                        'onReady': (event) => {
+                            this.onPlayerReady(event);
+                            this.loadMedia(this.currentId, this.currentType);
+                        },
+                        'onStateChange': (event) => this.onPlayerStateChange(event),
+                        'onError': (event) => console.error("YT Error:", event.data)
+                    }
+                });
+            } else if (this.ytPlayer) {
+                this.loadMedia(this.currentId, this.currentType);
+            }
+        },
+
+        async loadMedia(id, type) {
+            this.elements.playlistContainer.innerHTML = `
+                <div class="playlist-item">
+                    <div class="pi-info">
+                        <span class="pi-title">Loading...</span>
+                        <span class="pi-artist">Please wait</span>
+                    </div>
+                </div>
+            `;
+            
+            this.tracks = []; // Clear current tracks
+
+            if (type === 'playlist') {
+                // Backend Fetch for Playlist
+                try {
+                    const response = await fetch(`${BACKEND_API_URL}?id=${id}`);
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    const data = await response.json();
+                    this.tracks = data.tracks;
+                    if(data.title) {
+                        const lbl = document.getElementById('playlist-header-label');
+                        if(lbl) lbl.innerText = "Playing: " + data.title;
+                    }
+                    this.renderPlaylist();
+                    
+                    if (this.ytPlayer && this.ytPlayer.loadPlaylist) {
+                        const videoIds = this.tracks.map(t => t.id);
+                        // Use loadPlaylist to auto-play
+                        this.ytPlayer.loadPlaylist({ playlist: videoIds });
+                    }
+                } catch (error) {
+                    console.error("Error fetching playlist:", error);
+                    this.renderError(error.message);
+                }
+            } else {
+                // Single Video (Local)
+                this.tracks = [{
+                    id: id,
+                    title: "Loading Video...",
+                    artist: "YouTube",
+                    duration: 0
+                }];
+                this.renderPlaylist();
+
+                if (this.ytPlayer && this.ytPlayer.loadVideoById) {
+                    // Use loadVideoById to auto-play
+                    this.ytPlayer.loadVideoById(id);
+                }
+            }
+        },
+
+        renderError(msg) {
+            this.elements.playlistContainer.innerHTML = `
+                <div class="playlist-item">
+                    <div class="pi-info">
+                        <span class="pi-title">Error</span>
+                        <span class="pi-artist">${msg}</span>
+                    </div>
+                </div>
+            `;
+        },
+
+        onPlayerReady(event) {
+            event.target.setVolume(50);
+            event.target.playVideo(); // Ensure play on ready
+        },
+
+        onPlayerStateChange(event) {
+            if (event.data === YT.PlayerState.PLAYING) {
+                this.isPlaying = true;
+                this.updatePlayBtn();
+                this.startProgressTimer();
+                this.updateTrackInfo();
+                this.renderPlaylist(); 
+            } else if (event.data === YT.PlayerState.PAUSED) {
+                this.isPlaying = false;
+                this.updatePlayBtn();
+                this.stopProgressTimer();
+            } else if (event.data === YT.PlayerState.ENDED) {
+                if (this.isLooping) {
+                    if (this.currentType === 'playlist' && this.ytPlayer.getPlaylistIndex() === this.tracks.length - 1) {
+                         this.ytPlayer.playVideoAt(0);
+                    } else if (this.currentType === 'video') {
+                         this.ytPlayer.playVideo();
+                    }
+                } else {
+                    // Check if it's the end of playlist
+                    if (this.currentType === 'video' || (this.currentType === 'playlist' && this.ytPlayer.getPlaylistIndex() === this.tracks.length - 1)) {
+                         this.isPlaying = false;
+                         this.updatePlayBtn();
+                         this.stopProgressTimer();
+                         this.ytPlayer.stopVideo();
+                         this.updateTrackInfo();
+                    }
+                }
+            } else if (event.data === YT.PlayerState.BUFFERING || event.data === YT.PlayerState.CUED) {
+                 this.updateTrackInfo(); // Update metadata if available
+                 this.renderPlaylist();
+            }
+        },
+
+        updateTrackInfo() {
+            if(!this.ytPlayer || !this.ytPlayer.getVideoData) return;
+            
+            const data = this.ytPlayer.getVideoData();
+            let trackIndex = 0;
+            
+            if (this.currentType === 'playlist') {
+                trackIndex = this.ytPlayer.getPlaylistIndex();
+            }
+
+            // Update internal track data with real data from player if placeholder
+            if (this.tracks[trackIndex]) {
+                if (data.title && (this.tracks[trackIndex].title === "Loading Video..." || this.tracks[trackIndex].title !== data.title)) {
+                    this.tracks[trackIndex].title = data.title;
+                    this.tracks[trackIndex].artist = data.author || "YouTube";
+                }
+                const dur = this.ytPlayer.getDuration();
+                if (dur) this.tracks[trackIndex].duration = dur;
+            }
+
+            // Update UI
+            const track = this.tracks[trackIndex];
+            if(track) {
+                 if(this.elements.title) this.elements.title.innerText = track.title;
+                 if(this.elements.artist) this.elements.artist.innerText = track.artist;
+            } else if (data.title) {
+                 if(this.elements.title) this.elements.title.innerText = data.title;
+                 if(this.elements.artist) this.elements.artist.innerText = data.author;
+            }
+            
+            // Update Thumbnail
+            const thumbEl = document.getElementById('player-thumbnail');
+            if (thumbEl && data.video_id) {
+                const thumbUrl = `https://img.youtube.com/vi/${data.video_id}/mqdefault.jpg`;
+                if (thumbEl.src !== thumbUrl) thumbEl.src = thumbUrl;
+                
+                if (this.isPlaying) thumbEl.classList.add('playing');
+                else thumbEl.classList.remove('playing');
+            }
+
+            // Handle Scrolling Title
+            if (this.elements.title) {
+                const titleEl = this.elements.title;
+                // Reset to check natural width
+                titleEl.classList.remove('scrolling');
+                
+                // Check overflow: scrollWidth > clientWidth (of parent)
+                // We need to compare title's full width against the container width
+                const containerWidth = titleEl.parentElement ? titleEl.parentElement.clientWidth : 0;
+                if (titleEl.scrollWidth > containerWidth) {
+                    titleEl.classList.add('scrolling');
+                }
+            }
+            
+            const duration = this.ytPlayer.getDuration();
+            if(this.elements.totalTime && duration) this.elements.totalTime.innerText = this.formatTime(duration);
+        },
+
+
+        loadPlaylist(id) {
+             this.loadMedia(id, 'playlist');
+        },
+
+        togglePlay() {
+            if(!this.ytPlayer || !this.ytPlayer.getPlayerState) return;
+            
+            const state = this.ytPlayer.getPlayerState();
+            if(state === YT.PlayerState.PLAYING) {
+                this.ytPlayer.pauseVideo();
+            } else {
+                this.ytPlayer.playVideo();
+            }
+        },
+
+        nextTrack() {
+            if (!this.ytPlayer) return;
+            
+            if (this.currentType === 'playlist') {
+                this.ytPlayer.nextVideo();
+            } else {
+                this.ytPlayer.seekTo(0);
+                this.ytPlayer.playVideo();
+            }
+        },
+
+        prevTrack() {
+            if (!this.ytPlayer) return;
+            
+            if (this.currentType === 'playlist') {
+                this.ytPlayer.previousVideo();
+            } else {
+                this.ytPlayer.seekTo(0);
+                this.ytPlayer.playVideo();
+            }
+        },
+
+        toggleShuffle() {
+            this.isShuffling = !this.isShuffling;
+            if (this.elements.shuffleBtn) {
+                if (this.isShuffling) this.elements.shuffleBtn.classList.add('active');
+                else this.elements.shuffleBtn.classList.remove('active');
+            }
+            if (this.ytPlayer && this.ytPlayer.setShuffle) {
+                this.ytPlayer.setShuffle(this.isShuffling);
+            }
+        },
+
+        
+        toggleLoop() {
+            this.isLooping = !this.isLooping;
+            if(this.elements.loopBtn) {
+                if (this.isLooping) this.elements.loopBtn.classList.add('active');
+                else this.elements.loopBtn.classList.remove('active');
+            }
+            // For playlist looping, setLoop(true) makes the entire playlist loop.
+            // If we want to loop a single track, we'd need custom logic in onStateChange (ENDED).
+            // For now, assume isLooping applies to the playlist.
+            if(this.ytPlayer && this.ytPlayer.setLoop) {
+                this.ytPlayer.setLoop(this.isLooping);
+            }
+        },
+
+        updatePlayBtn() {
+            if(this.elements.playBtn) {
+                this.elements.playBtn.innerHTML = this.isPlaying ? '<i class="bi bi-pause-fill"></i>' : '<i class="bi bi-play-fill"></i>';
+            }
+        },
+
+        startProgressTimer() {
+            this.stopProgressTimer();
+            this.updateProgress(); // Immediate update
+            this.updateTimer = setInterval(() => this.updateProgress(), 500);
+        },
+
+        stopProgressTimer() {
+            if(this.updateTimer) clearInterval(this.updateTimer);
+        },
+
+        updateProgress() {
+            if(!this.ytPlayer || !this.ytPlayer.getCurrentTime) return;
+            
+            const current = this.ytPlayer.getCurrentTime();
+            const duration = this.ytPlayer.getDuration();
+            
+            if(this.elements.currTime) this.elements.currTime.innerText = this.formatTime(current);
+            // Total time from YT player's actual duration, not static track data
+            if(this.elements.totalTime && duration) this.elements.totalTime.innerText = this.formatTime(duration);
+            
+            if(this.elements.progressFill && duration > 0) {
+                const percent = (current / duration) * 100;
+                this.elements.progressFill.style.width = `${percent}%`;
+            }
+        },
+
+        formatTime(seconds) {
+            if (isNaN(seconds) || seconds === 0) return "0:00"; // Handle non-numeric or zero seconds
+            const m = Math.floor(seconds / 60);
+            const s = Math.floor(seconds % 60);
+            return `${m}:${s < 10 ? '0' : ''}${s}`;
+        },
+
+        renderPlaylist() {
+            if(!this.elements.playlistContainer) return;
+            this.elements.playlistContainer.innerHTML = '';
+            
+            if (this.tracks.length === 0) {
+                this.elements.playlistContainer.innerHTML = `
+                    <div class="playlist-item">
+                        <div class="pi-info">
+                            <span class="pi-title">No playlist loaded.</span>
+                            <span class="pi-artist">Enter a YouTube Playlist URL or ID in settings.</span>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            let currentPlaylistIndex = -1;
+            try {
+                if (this.ytPlayer && typeof this.ytPlayer.getPlaylistIndex === 'function') {
+                    currentPlaylistIndex = this.ytPlayer.getPlaylistIndex();
+                }
+            } catch(e) { /* Ignore */ }
+
+            this.tracks.forEach((track, index) => {
+                const el = document.createElement('div');
+                el.className = `playlist-item ${index === currentPlaylistIndex ? 'active' : ''}`;
+                el.setAttribute('data-index', index);
+                el.innerHTML = `
+                    <img src="https://img.youtube.com/vi/${track.id}/default.jpg" class="pi-thumb" loading="lazy">
+                    <div class="pi-info">
+                        <span class="pi-title">${track.title}</span>
+                        <span class="pi-artist">${track.artist}</span>
+                    </div>
+                    <span class="pi-duration">${this.formatTime(track.duration)}</span>
+                `;
+                el.onclick = () => {
+                    if (this.ytPlayer) {
+                        if (this.currentType === 'playlist') {
+                            this.ytPlayer.playVideoAt(index);
+                        } else {
+                            this.ytPlayer.playVideo();
+                        }
+                        this.play(); 
+                    }
+                };
+                this.elements.playlistContainer.appendChild(el);
+            });
+        },
+        
+        extractInputData(input) {
+            // 1. Check for full URL
+            try {
+                const url = new URL(input);
+                
+                // Playlist: list=...
+                if (url.searchParams.has('list')) {
+                    return { id: url.searchParams.get('list'), type: 'playlist' };
+                }
+                
+                // Video: v=... or short URL
+                if (url.hostname === 'youtu.be') {
+                     return { id: url.pathname.slice(1), type: 'video' };
+                }
+                if (url.searchParams.has('v')) {
+                    return { id: url.searchParams.get('v'), type: 'video' };
+                }
+                
+                // Embed URL
+                if (url.pathname.startsWith('/embed/')) {
+                    return { id: url.pathname.split('/')[2], type: 'video' };
+                }
+
+            } catch (e) {
+                // Not a valid URL, treat as ID
+            }
+            
+            // 2. Check IDs
+            // Playlist ID usually starts with PL, FL, RD, OL... and is long
+            if (/^(PL|FL|RD|UL|OL)[a-zA-Z0-9_-]+$/.test(input)) {
+                return { id: input, type: 'playlist' };
+            }
+            
+            // Video ID is usually 11 chars
+            if (/^[a-zA-Z0-9_-]{11}$/.test(input)) {
+                return { id: input, type: 'video' };
+            }
+            
+            return null;
+        }
+    };
+    
+    // Defer init slightly to ensure DOM elements from string injection are ready
+    setTimeout(() => musicPlayer.init(), 100);
 
     // Initialize
     loadSettings();

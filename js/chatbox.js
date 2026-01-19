@@ -1,6 +1,29 @@
 (function () {
     const API_ENDPOINT = 'api/chat.php';
     marked.setOptions({ breaks: true });
+
+    const katexStyle = document.createElement('link');
+    katexStyle.rel = 'stylesheet';
+    katexStyle.href = 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css';
+    document.head.appendChild(katexStyle);
+
+    const loadScript = (src) => {
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = src;
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
+    };
+    Promise.all([
+        loadScript('https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js'),
+    ]).then(() => {
+        return loadScript('https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js');
+    }).then(() => {
+        console.log("KaTeX Loaded");
+    }).catch(err => console.error("Failed to load KaTeX", err));
+
     const style = document.createElement('style');
     style.innerHTML = `
         #ai-widget-container { position: fixed; top: 20px; bottom: 20px; right: 20px; width: 420px; z-index: 10000; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; pointer-events: none; display: flex; flex-direction: column; justify-content: flex-end; transition: all 0.3s ease; }
@@ -8,8 +31,8 @@
         #ai-widget-box { background: rgba(20, 20, 20, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); display: flex; flex-direction: column; overflow: hidden; pointer-events: auto; transition: all 0.3s ease; height: 100%; }
         .ai-minimized #ai-widget-box { height: auto; border-radius: 20px; background: transparent; box-shadow: none; border: none; overflow: visible; }
         .ai-minimized #ai-widget-input-area { background: rgba(20, 20, 20, 0.85); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 25px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
-        #ai-widget-messages { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; scrollbar-width: thin; scrollbar-color: #555 transparent; }
-        .ai-msg { max-width: 85%; padding: 12px 16px; border-radius: 18px; font-size: 15px; line-height: 1.5; color: #fff; word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; overflow-x: auto; animation: popIn 0.3s ease-out; }
+        #ai-widget-messages { flex-grow: 1; padding: 20px; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; gap: 12px; scrollbar-width: thin; scrollbar-color: #555 transparent; }
+        .ai-msg { max-width: 85%; padding: 0px 16px; border-radius: 18px; font-size: 15px; line-height: 1.5; color: #fff; word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; animation: popIn 0.3s ease-out; }
         .ai-msg img { max-width: 100%; height: auto; border-radius: 8px; }
         .ai-msg pre { max-width: 100%; overflow-x: auto; white-space: pre; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; }
         .ai-msg code { word-break: break-all; }
@@ -70,6 +93,8 @@
         
         #ai-btn-minimize { background: none; border: none; color: #ccc; cursor: pointer; font-size: 20px; line-height: 1; display: flex; align-items: center; }
         #ai-btn-minimize:hover { color: #fff; }
+        .katex { font-size: 1.1em; }
+        .katex-display { margin: 10px 0; overflow-x: auto; overflow-y: hidden; }
     `;
     document.head.appendChild(style);
 
@@ -104,19 +129,19 @@
         </div>
     `;
     document.body.appendChild(container);
-    
+
     // Toggle Minimize/Maximize Logic
     const btnMinimize = document.getElementById('ai-btn-minimize');
     const btnRestore = document.getElementById('ai-btn-restore');
     const widgetContainer = document.getElementById('ai-widget-container');
 
-    if(btnMinimize) {
+    if (btnMinimize) {
         btnMinimize.addEventListener('click', () => {
             widgetContainer.classList.add('ai-minimized');
         });
     }
 
-    if(btnRestore) {
+    if (btnRestore) {
         btnRestore.addEventListener('click', () => {
             widgetContainer.classList.remove('ai-minimized');
         });
@@ -125,7 +150,7 @@
     const input = document.getElementById('ai-widget-input');
     const msgContainer = document.getElementById('ai-widget-messages');
     const btnSend = document.getElementById('ai-btn-send');
-    
+
     // --- Title Edit Logic ---
     const btnEditTitle = document.getElementById('ai-btn-edit-title');
     const titleSpan = document.getElementById('ai-widget-title');
@@ -156,9 +181,9 @@
     let isProcessing = false;
 
     // --- INTEGRATION: Reload UI ---
-    window.reloadChatUI = function(sessionId) {
+    window.reloadChatUI = function (sessionId) {
         msgContainer.innerHTML = ''; // Clear current
-        
+
         // Update Title
         if (window.YukiChat) {
             const session = window.YukiChat.getSession(sessionId);
@@ -168,7 +193,7 @@
         }
 
         const history = window.YukiChat.getHistory(sessionId);
-        
+
         if (history.length === 0) {
             addMessage("Chào cậu! Tớ là Yuki đây, cậu cần tớ giúp gì không nhỉ?", 'model');
         } else {
@@ -184,8 +209,25 @@
         div.className = `ai-msg ai-msg-${role}`;
         div.innerHTML = marked.parse(text);
         msgContainer.appendChild(div);
+        if (window.renderMathInElement) {
+            try {
+                renderMathInElement(div, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false},
+                        {left: '\\(', right: '\\)', display: false},
+                        {left: '\\[', right: '\\]', display: true}
+                    ],
+                    throwOnError: false
+                });
+            } catch(e) {
+                console.warn("KaTeX render error:", e);
+            }
+        }
+
         msgContainer.scrollTop = msgContainer.scrollHeight;
     }
+
 
     function base64ToArrayBuffer(base64) {
         const binaryString = window.atob(base64);
@@ -349,13 +391,13 @@
     async function sendMessage() {
         const text = input.value.trim();
         if (!text && !currentFile || isProcessing) return;
-        
+
         let userMsgHTML = text;
         if (currentFile) {
             userMsgHTML += `<br><i>[Đính kèm: ${currentFile.name}]</i>`;
         }
         addMessage(userMsgHTML, 'user');
-        
+
         // Save User Message
         window.YukiChat.saveMessage('user', text);
 
@@ -481,7 +523,7 @@
     } else {
         document.getElementById('ai-btn-voice').style.display = 'none'; // Ẩn nút mic nếu browser không hỗ trợ
     }
-    
+
     // Initialize Session Manager
     if (window.YukiChat) {
         window.YukiChat.init();

@@ -1,7 +1,8 @@
-<html lang="en">
 <?php
     //good one!
 ?>
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <title>Yuki-chan!</title>
     <meta charset="UTF-8">
@@ -28,16 +29,17 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="shortcut icon" href="assets/favicon.png" type="image/x-icon">
-    
+
     <script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/dylanNew/live2d/webgl/Live2D/lib/live2d.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/pixi.js@6.5.2/dist/browser/pixi.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/pixi-live2d-display/dist/index.min.js"></script>
+    <script src="https://sdk.scdn.co/spotify-player.js"></script>
 </head>
 
-<body style="height:100%; position: relative; margin:0; padding:0">
+<body>
     <div id="loading-overlay">
         <img src="assets/loading.gif" alt="Loading..." class="loading-gif">
         <div id="loading-text" class="loading-text">Initializing...</div>
@@ -50,6 +52,7 @@
     <script src="js/session_manager.js"></script>
     <script src="js/chatbox.js"></script>
     <script src="js/sidebar.js"></script>
+    <script src="js/spotify.js"></script>
 </body>
 
 </html>

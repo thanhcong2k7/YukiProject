@@ -1,5 +1,5 @@
 <?php
-define('GEMINI_API_KEY', 'NEVERMIND');
+define('GEMINI_API_KEY', 'AIzaSyBZjmP0mkjcy-dvwDA8CeNy2I0WTt9q0r8');
 define('GEMINI_MODEL', getenv('GEMINI_MODEL') ?: 'gemini-2.0-flash');
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
