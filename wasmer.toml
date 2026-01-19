@@ -1,0 +1,13 @@
+[package]
+name = "thanhcong2k7/yuki"
+version = "0.1.2"
+description = "Yuki Assistant"
+license = "MIT"
+
+[dependencies]
+"php/php" = "^8.2"
+
+[[command]]
+name = "script"
+module = "php/php:php"
+runner = "wasi"

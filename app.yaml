@@ -1,0 +1,5 @@
+name: yuki
+app_id: da_2l9IzteUOBg4
+owner: thanhcong2k7
+package: .
+kind: wasmer.io/App.v0
