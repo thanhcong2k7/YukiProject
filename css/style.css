@@ -3,22 +3,32 @@ body {
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
-    color: #333; /* Default text color */
+    color: #333;
+    /* Default text color */
 }
 
 /* HTML: <div class="loader"></div> */
 .loader {
-  height: 4px;
-  width: 130px;
-  --c:no-repeat linear-gradient(#6100ee 0 0);
-  background: var(--c),var(--c),#d7b8fc;
-  background-size: 60% 100%;
-  animation: l16 3s infinite;
+    height: 4px;
+    width: 130px;
+    --c: no-repeat linear-gradient(#6100ee 0 0);
+    background: var(--c), var(--c), #d7b8fc;
+    background-size: 60% 100%;
+    animation: l16 3s infinite;
 }
+
 @keyframes l16 {
-  0%   {background-position:-150% 0,-150% 0}
-  66%  {background-position: 250% 0,-150% 0}
-  100% {background-position: 250% 0, 250% 0}
+    0% {
+        background-position: -150% 0, -150% 0
+    }
+
+    66% {
+        background-position: 250% 0, -150% 0
+    }
+
+    100% {
+        background-position: 250% 0, 250% 0
+    }
 }
 
 #loading-overlay {
@@ -27,13 +37,15 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(15,15,15,0.7);
+    background: rgba(15, 15, 15, 0.7);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(7px);
     z-index: 99999;
     display: flex;
-    justify-content: center; /* Center horizontally */
-    align-items: center;     /* Center vertically */
+    justify-content: center;
+    /* Center horizontally */
+    align-items: center;
+    /* Center vertically */
     flex-direction: column;
     transition: opacity 1.5s ease, visibility 1.5s;
 }
@@ -44,8 +56,10 @@ body {
 }
 
 .loading-gif {
-    width: 100px; /* Adjust size as needed */
-    height: auto; /* Adjust size as needed */
+    width: 100px;
+    /* Adjust size as needed */
+    height: auto;
+    /* Adjust size as needed */
     margin-bottom: 20px;
 }
 
@@ -73,6 +87,19 @@ body {
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.markdown-body {
+    box-sizing: border-box;
+    min-width: 200px;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 45px;
 }

@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Tương tác với Yuki-chan, người bạn AI tương tác của bạn được cung cấp bởi Live2D và Gemini AI. Trải nghiệm trò chuyện, biểu cảm và tương tác động trong thời gian thực.">
-    <meta name="keywords" content="Yuki-chan, bạn đồng hành AI, Live2D, Gemini AI, trò chuyện tương tác, trợ lý ảo, AMVN OAuth">
+    <meta name="keywords" content="Yuki-chan, bạn đồng hành AI, Live2D, Gemini AI, trò chuyện tương tác, trợ lý ảo">
     <meta name="robots" content="index, follow">
     <meta name="author" content="Etheriaa">
 
@@ -28,6 +28,8 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="shortcut icon" href="assets/favicon.png" type="image/x-icon">
+    
+    <script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/dylanNew/live2d/webgl/Live2D/lib/live2d.min.js"></script>

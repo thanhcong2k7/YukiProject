@@ -352,7 +352,7 @@
                                 <div style="color: #eee;">0.36.18-alpha</div>
                                 
                                 <div style="color: #888;">Model</div>
-                                <div style="color: #eee;">Vivian (<a href="https://booth.pm/en/items/7811941">Booth.pm</a>)</div>
+                                <div style="color: #eee;">Vivian (<a href="https://booth.pm/en/items/7811941" style="color: #00C6FF; text-decoration: none;">Booth.pm</a>)</div>
                                 
                                 <div style="color: #888;">Engine</div>
                                 <div style="color: #eee;">PixiJS + Live2D SDK</div>

@@ -1,5 +1,6 @@
 (function () {
     const API_ENDPOINT = 'api/chat.php';
+    marked.setOptions({ breaks: true });
     const style = document.createElement('style');
     style.innerHTML = `
         #ai-widget-container { position: fixed; top: 20px; bottom: 20px; right: 20px; width: 420px; z-index: 10000; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; pointer-events: none; display: flex; flex-direction: column; justify-content: flex-end; transition: all 0.3s ease; }
@@ -7,9 +8,11 @@
         #ai-widget-box { background: rgba(20, 20, 20, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); display: flex; flex-direction: column; overflow: hidden; pointer-events: auto; transition: all 0.3s ease; height: 100%; }
         .ai-minimized #ai-widget-box { height: auto; border-radius: 20px; background: transparent; box-shadow: none; border: none; overflow: visible; }
         .ai-minimized #ai-widget-input-area { background: rgba(20, 20, 20, 0.85); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 25px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
-        
         #ai-widget-messages { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; scrollbar-width: thin; scrollbar-color: #555 transparent; }
-        .ai-msg { max-width: 85%; padding: 12px 16px; border-radius: 18px; font-size: 15px; line-height: 1.5; color: #fff; word-wrap: break-word; animation: popIn 0.3s ease-out; }
+        .ai-msg { max-width: 85%; padding: 12px 16px; border-radius: 18px; font-size: 15px; line-height: 1.5; color: #fff; word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; overflow-x: auto; animation: popIn 0.3s ease-out; }
+        .ai-msg img { max-width: 100%; height: auto; border-radius: 8px; }
+        .ai-msg pre { max-width: 100%; overflow-x: auto; white-space: pre; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; }
+        .ai-msg code { word-break: break-all; }
         .ai-msg-user { align-self: flex-end; background: linear-gradient(135deg, #007AFF, #00C6FF); border-bottom-right-radius: 4px; color: #fff; }
         .ai-msg-model { align-self: flex-start; background: rgba(255, 255, 255, 0.15); border-bottom-left-radius: 4px; }
         .ai-error { color: #ff6b6b; font-size: 13px; text-align: center; margin-top: 5px; font-style: italic; }
@@ -179,7 +182,7 @@
     function addMessage(text, role) {
         const div = document.createElement('div');
         div.className = `ai-msg ai-msg-${role}`;
-        div.innerHTML = text.replace(/\n/g, '<br>');
+        div.innerHTML = marked.parse(text);
         msgContainer.appendChild(div);
         msgContainer.scrollTop = msgContainer.scrollHeight;
     }
