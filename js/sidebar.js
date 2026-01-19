@@ -288,7 +288,7 @@
     document.head.appendChild(style);
 
     // --- HTML Structure ---
-    
+
     // 1. Sidebar
     const sidebar = document.createElement('div');
     sidebar.id = 'app-sidebar';
@@ -342,25 +342,25 @@
                     
                     <div id="sect-about" class="settings-section">
                         <div style="text-align: center; margin-bottom: 20px;">
-                            <h2 style="margin: 0; color: #fff; font-weight: 700; letter-spacing: 1px;">Về Yuki Project</h2>
+                            <h2 style="margin: 0; color: #fff; font-weight: 700; letter-spacing: 1px;">Yuki Project</h2>
                             <p style="margin: 5px 0 0; color: #00C6FF; font-size: 13px;">Simply a hobbyist project.</p>
                         </div>
                         
                         <div style="background: rgba(255,255,255,0.05); border-radius: 8px; padding: 15px; margin-bottom: 20px;">
                             <div style="display: grid; grid-template-columns: 100px 1fr; gap: 10px; font-size: 14px;">
                                 <div style="color: #888;">Version</div>
-                                <div style="color: #eee;">0.36.18</div>
+                                <div style="color: #eee;">0.36.18-alpha</div>
                                 
                                 <div style="color: #888;">Model</div>
-                                <div style="color: #eee;">Yuki</div>
+                                <div style="color: #eee;">Vivian (<a href="https://booth.pm/en/items/7811941">Booth.pm</a>)</div>
                                 
                                 <div style="color: #888;">Engine</div>
                                 <div style="color: #eee;">PixiJS + Live2D SDK</div>
                                 
-                                <div style="color: #888;">AI Core</div>
+                                <div style="color: #888;">Chat AI</div>
                                 <div style="color: #eee;">Gemini 2.0 Flash</div>
                                 
-                                <div style="color: #888;">Voice</div>
+                                <div style="color: #888;">TTS AI</div>
                                 <div style="color: #eee;">Gemini 2.5 Flash TTS</div>
                             </div>
                         </div>
@@ -385,16 +385,16 @@
     document.body.appendChild(emoteBar);
 
     // --- Logic ---
-    
+
     // Render Session List
     function renderSessionList() {
         // Keep the "Recent" label
         const navContainer = document.querySelector('.sidebar-nav');
         navContainer.innerHTML = '<div class="nav-label">Recent</div>';
-        
+
         const sessions = window.YukiChat ? window.YukiChat.sessions : [];
         const currentId = window.YukiChat ? window.YukiChat.currentSessionId : null;
-        
+
         sessions.forEach(session => {
             const item = document.createElement('div');
             item.className = `nav-item ${session.id === currentId ? 'active' : ''}`;
@@ -405,22 +405,22 @@
                     <i class="bi bi-trash"></i>
                 </button>
             `;
-            
+
             // Hover to show delete
             item.addEventListener('mouseenter', () => {
                 const delBtn = item.querySelector('.delete-chat-btn');
-                if(delBtn) delBtn.style.display = 'block';
+                if (delBtn) delBtn.style.display = 'block';
             });
             item.addEventListener('mouseleave', () => {
                 const delBtn = item.querySelector('.delete-chat-btn');
-                if(delBtn) delBtn.style.display = 'none';
+                if (delBtn) delBtn.style.display = 'none';
             });
 
             // Click to load
             item.addEventListener('click', (e) => {
                 if (e.target.closest('.delete-chat-btn')) {
                     e.stopPropagation();
-                    if(confirm('Delete this chat?')) {
+                    if (confirm('Delete this chat?')) {
                         window.YukiChat.deleteSession(session.id);
                     }
                     return;
@@ -435,7 +435,7 @@
     // New Chat Button
     const btnNewChat = document.querySelector('.new-chat-btn');
     btnNewChat.onclick = () => {
-        if(window.YukiChat) window.YukiChat.newSession();
+        if (window.YukiChat) window.YukiChat.newSession();
     };
 
     // Listen for Session Updates
@@ -447,17 +447,17 @@
     setTimeout(renderSessionList, 100);
 
     // Load Settings from LocalStorage
-    
+
     // Settings Navigation Logic
     const catBtns = document.querySelectorAll('.settings-cat-btn');
     const sections = document.querySelectorAll('.settings-section');
-    
+
     catBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             // Remove active from all
             catBtns.forEach(b => b.classList.remove('active'));
             sections.forEach(s => s.classList.remove('active'));
-            
+
             // Add active to current
             btn.classList.add('active');
             document.getElementById(btn.dataset.target).classList.add('active');
@@ -475,8 +475,11 @@
         // Background
         const savedBg = localStorage.getItem('yuki_bg_color');
         if (savedBg) {
-             document.body.style.background = savedBg;
-             document.body.style.backgroundSize = "cover";
+            document.body.style.background = savedBg;
+            document.body.style.backgroundSize = "cover";
+        } else {
+            document.body.style.background = 'url("./assets/bg1.jpg")';
+            document.body.style.backgroundSize = "cover";
         }
     }
 
@@ -484,7 +487,7 @@
     const collapseBtn = document.getElementById('sidebar-collapse-btn');
     function toggleSidebar(forceCollapse = null) {
         const isCollapsed = forceCollapse !== null ? forceCollapse : !sidebar.classList.contains('collapsed');
-        
+
         if (isCollapsed) {
             sidebar.classList.add('collapsed');
             collapseBtn.innerHTML = '<i class="bi bi-chevron-right"></i>';
@@ -492,20 +495,20 @@
             sidebar.classList.remove('collapsed');
             collapseBtn.innerHTML = '<i class="bi bi-chevron-left"></i>';
         }
-        
+
         // Save State
         localStorage.setItem('yuki_sidebar_collapsed', isCollapsed);
-        
+
         // Trigger resize so Canvas adjusts
         window.dispatchEvent(new Event('resize'));
     }
-    
+
     collapseBtn.addEventListener('click', () => toggleSidebar());
 
     // Settings Modal Logic
     const btnSettings = document.getElementById('btn-settings');
     const btnCloseModal = modal.querySelector('.modal-close');
-    
+
     btnSettings.addEventListener('click', () => {
         modal.classList.add('open');
     });
@@ -518,19 +521,30 @@
 
     // Backgrounds
     const backgrounds = [
+        { color: 'url("./assets/bg1.jpg")', name: 'Sakura' },
         { color: '#1a1a1a', name: 'Dark' },
         { color: '#f0f0f0', name: 'Light' },
         { color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', name: 'Gradient 1' },
-        { color: 'linear-gradient(to top, #30cfd0 0%, #330867 100%)', name: 'Gradient 2' },
-        { color: 'url("https://images.unsplash.com/photo-1518066000714-58c45f1a2c0a?auto=format&fit=crop&w=800&q=80")', name: 'City' },
-        { color: 'url("https://images.unsplash.com/photo-1464802686167-b939a6910659?auto=format&fit=crop&w=800&q=80")', name: 'Space' }
+        { color: 'linear-gradient(to top, #30cfd0 0%, #330867 100%)', name: 'Gradient 2' }
     ];
     const bgGrid = document.getElementById('bg-options-grid');
+    
+    // Get current saved bg to highlight
+    const currentSavedBg = localStorage.getItem('yuki_bg_color');
+    // Default is Sakura if nothing saved
+    const activeBg = currentSavedBg || 'url("./assets/bg1.jpg")';
+
     backgrounds.forEach(bg => {
         const div = document.createElement('div');
         div.className = 'bg-option';
         div.style.background = bg.color;
         div.title = bg.name;
+        
+        // Highlight active
+        if (bg.color === activeBg) {
+            div.classList.add('selected');
+        }
+
         div.onclick = () => {
             document.body.style.background = bg.color;
             document.body.style.backgroundSize = "cover";
@@ -546,7 +560,7 @@
     const inputCustomBg = document.getElementById('custom-bg-input');
     btnCustomBg.addEventListener('click', () => {
         const url = inputCustomBg.value.trim();
-        if(url) {
+        if (url) {
             const bgValue = `url("${url}")`;
             document.body.style.background = bgValue;
             document.body.style.backgroundSize = "cover";
@@ -562,10 +576,10 @@
     btnEmotes.addEventListener('click', () => {
         const bar = document.getElementById('emote-bar');
         bar.classList.toggle('visible');
-        
+
         // Auto hide after 8 seconds if no interaction
         clearTimeout(emoteTimeout);
-        if(bar.classList.contains('visible')) {
+        if (bar.classList.contains('visible')) {
             emoteTimeout = setTimeout(() => {
                 bar.classList.remove('visible');
             }, 8000);
@@ -603,22 +617,22 @@
 
         try {
             console.log("Attempting expression:", expName);
-            
+
             if (expName === null) {
                 // Reset is complex, usually we just set a neutral expression if exists
                 // or we rely on the idle motion to take over.
                 // There isn't a direct "clearExpression" in the high level API easily accessible without digging.
                 console.log("Resetting expression...");
                 // Just try setting an empty one or undefined
-                window.model4.internalModel.motionManager.expressionManager.setExpression(0); 
+                window.model4.internalModel.motionManager.expressionManager.setExpression(0);
             } else {
                 // Try 1: Direct name
                 window.model4.expression(expName);
-                
+
                 // Debugging: List available expressions
-                if(window.model4.internalModel && window.model4.internalModel.motionManager && window.model4.internalModel.motionManager.expressionManager) {
-                     const definitions = window.model4.internalModel.motionManager.expressionManager.definitions;
-                     console.log("Available Expressions:", definitions);
+                if (window.model4.internalModel && window.model4.internalModel.motionManager && window.model4.internalModel.motionManager.expressionManager) {
+                    const definitions = window.model4.internalModel.motionManager.expressionManager.definitions;
+                    console.log("Available Expressions:", definitions);
                 }
             }
         } catch (e) {
@@ -629,19 +643,19 @@
     // Global actions
     window.triggerExpression = triggerExpression;
 
-    window.clearChat = function() {
-        if(confirm("Start a new chat? This will clear current history.")) {
+    window.clearChat = function () {
+        if (confirm("Start a new chat? This will clear current history.")) {
             localStorage.removeItem('yuki_chat_history');
             location.reload();
         }
     };
-    
+
     // Resize helper for Canvas (updated from previous)
     // We attach this as a global function so index.js can access if needed, or index.js will read DOM
-    window.getSidebarWidth = function() {
+    window.getSidebarWidth = function () {
         return sidebar.classList.contains('collapsed') ? 70 : 260;
     };
-    
+
     // Initialize
     loadSettings();
 
