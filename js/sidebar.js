@@ -561,6 +561,147 @@
         }
         .cal-day.empty { background: none; }
 
+        /* --- Media Window System --- */
+        .media-window {
+            position: fixed;
+            top: 100px; left: 100px;
+            width: 800px; height: 500px;
+            min-width: 400px; min-height: 300px;
+            background: rgba(20, 20, 20, 0.65); /* Semi-transparent like chatbox */
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 10000;
+            transition: box-shadow 0.2s, border-color 0.2s;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+        .media-window.active-window {
+            border-color: rgba(0, 198, 255, 0.3);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.6);
+            z-index: 10010; /* Bring to front */
+        }
+
+        .mw-header {
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: grab;
+            user-select: none;
+        }
+        .mw-header:active { cursor: grabbing; }
+
+        .mw-title { font-size: 14px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 8px; }
+        .mw-controls { display: flex; gap: 8px; }
+        .mw-btn {
+            background: none; border: none; color: #aaa; cursor: pointer;
+            padding: 4px; border-radius: 4px; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .mw-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .mw-btn.close:hover { background: #ff4444; }
+
+        .mw-body {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* Toolbar inside body */
+        .mw-toolbar {
+            padding: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex; gap: 10px; align-items: center;
+            background: rgba(0,0,0,0.2);
+        }
+
+        /* Sidebar inside window */
+        .mw-sidebar {
+            width: 200px;
+            background: rgba(0,0,0,0.2);
+            border-right: 1px solid rgba(255,255,255,0.05);
+            display: flex; flex-direction: column;
+            transition: width 0.3s ease;
+            overflow: hidden;
+        }
+        .mw-sidebar.collapsed { width: 0; border: none; }
+        
+        .mw-file-list {
+            flex: 1; overflow-y: auto; padding: 5px;
+            display: flex; flex-direction: column; gap: 2px;
+        }
+
+        .mw-content {
+            flex: 1;
+            background: rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .mw-viewer {
+            flex: 1;
+            width: 100%; /* Ensure full width */
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            background: rgba(0, 0, 0, 0.2); /* Slight darkening for contrast */
+        }
+
+        /* Resizer */
+        .mw-resize-handle {
+            position: absolute; bottom: 0; right: 0;
+            width: 15px; height: 15px;
+            cursor: se-resize;
+            z-index: 10;
+        }
+        .mw-resize-handle::after {
+            content: ''; position: absolute; bottom: 3px; right: 3px;
+            width: 6px; height: 6px;
+            border-right: 2px solid #666; border-bottom: 2px solid #666;
+        }
+
+        /* Items */
+        .mw-item {
+            padding: 8px 10px; border-radius: 4px; cursor: pointer;
+            display: flex; align-items: center; gap: 8px;
+            color: #ccc; font-size: 13px; white-space: nowrap;
+        }
+        .mw-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
+        .mw-item.active { background: rgba(0, 198, 255, 0.15); color: #00C6FF; }
+
+        .mw-placeholder { text-align: center; color: #666; font-size: 13px; }
+        .mw-placeholder i { font-size: 32px; display: block; margin-bottom: 5px; color: #444; }
+        
+        /* Media Elements - Fix for 1/9th size issue */
+        .media-iframe { 
+            position: absolute; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            border: none; 
+        }
+        .media-img, .media-video { 
+            max-width: 100%; 
+            max-height: 100%; 
+            width: auto; 
+            height: auto; 
+            object-fit: contain;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
     `;
     document.head.appendChild(style);
 
@@ -617,6 +758,9 @@
             </button>
             <button class="footer-btn" id="btn-emotes" title="Emotes">
                 <span><i class="bi bi-emoji-smile-fill"></i></span> <span>Biểu cảm</span>
+            </button>
+            <button class="footer-btn" id="btn-media" title="Media & Files">
+                <span><i class="bi bi-folder2-open"></i></span> <span>Tệp tin</span>
             </button>
             <button class="footer-btn" id="btn-fullscreen" title="Fullscreen">
                 <span><i class="bi bi-arrows-fullscreen"></i></span> <span>Toàn màn hình</span>
@@ -1040,6 +1184,330 @@
                 }
             }
         });
+    }
+
+    // --- Media & Files Logic (Multi-Window) ---
+    const btnMedia = document.getElementById('btn-media');
+    let globalZIndex = 10000;
+    
+    // Local DB (Global)
+    const LocalDB = {
+        dbName: 'YukiMediaDB',
+        version: 1,
+        db: null,
+        async init() {
+            if(this.db) return;
+            return new Promise((resolve, reject) => {
+                const req = indexedDB.open(this.dbName, this.version);
+                req.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if(!db.objectStoreNames.contains('files')) {
+                        db.createObjectStore('files', { keyPath: 'id', autoIncrement: true });
+                    }
+                };
+                req.onsuccess = (e) => { this.db = e.target.result; resolve(); };
+                req.onerror = reject;
+            });
+        },
+        async saveFile(file) {
+            if(!this.db) await this.init();
+            return new Promise((resolve, reject) => {
+                const tx = this.db.transaction('files', 'readwrite');
+                const store = tx.objectStore('files');
+                store.add({ name: file.name, type: file.type, date: new Date(), blob: file });
+                tx.oncomplete = resolve;
+                tx.onerror = reject;
+            });
+        },
+        async getAll() {
+            if(!this.db) await this.init();
+            return new Promise((resolve, reject) => {
+                const tx = this.db.transaction('files', 'readonly');
+                const req = tx.objectStore('files').getAll();
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = reject;
+            });
+        },
+        async delete(id) {
+            if(!this.db) await this.init();
+            return new Promise((resolve, reject) => {
+                const tx = this.db.transaction('files', 'readwrite');
+                const req = tx.objectStore('files').delete(id);
+                req.onsuccess = resolve;
+                req.onerror = reject;
+            });
+        }
+    };
+    LocalDB.init().catch(console.error); // Init once
+
+    if (btnMedia) {
+        btnMedia.addEventListener('click', () => {
+            createMediaWindow();
+        });
+    }
+
+    function createMediaWindow() {
+        // Unique ID for this window instance
+        const winId = 'mw-' + Date.now() + Math.floor(Math.random() * 1000);
+        
+        const win = document.createElement('div');
+        win.id = winId;
+        win.className = 'media-window active-window';
+        win.style.zIndex = ++globalZIndex;
+        // Random offset for stacking
+        win.style.top = (100 + Math.random() * 50) + 'px';
+        win.style.left = (150 + Math.random() * 50) + 'px';
+
+        win.innerHTML = `
+            <div class="mw-header">
+                <div class="mw-title"><i class="bi bi-folder2-open"></i> Media & Files</div>
+                <div class="mw-controls">
+                    <button class="mw-btn help-btn" title="Help"><i class="bi bi-question-circle"></i></button>
+                    <button class="mw-btn collapse-side" title="Toggle Sidebar"><i class="bi bi-layout-sidebar"></i></button>
+                    <button class="mw-btn close" title="Close"><i class="bi bi-x-lg"></i></button>
+                </div>
+            </div>
+            <div class="mw-body" style="position:relative;">
+                <div class="mw-sidebar">
+                    <div class="mw-toolbar" style="padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <button class="emote-btn" style="flex:1; font-size:12px; padding:6px;" id="${winId}-upload"><i class="bi bi-upload"></i></button>
+                        <input type="file" id="${winId}-file-input" style="display:none" multiple>
+                    </div>
+                    <div class="mw-file-list" id="${winId}-list">
+                        <!-- List -->
+                    </div>
+                </div>
+                <div class="mw-content">
+                    <div class="mw-toolbar">
+                        <input type="text" id="${winId}-url-input" placeholder="URL..." style="background:rgba(0,0,0,0.3); border:1px solid #444; color:#eee; padding:5px 10px; border-radius:4px; flex:1; font-size:12px;">
+                        <button class="emote-btn" style="font-size:12px; padding:6px 12px;" id="${winId}-go">Go</button>
+                    </div>
+                    <div class="mw-viewer" id="${winId}-view">
+                         <div class="mw-placeholder"><i class="bi bi-collection"></i>Select / Enter URL</div>
+                    </div>
+                </div>
+                
+                <!-- Help Overlay -->
+                <div class="mw-help-overlay" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(20,20,20,0.95); z-index:50; flex-direction:column; padding:20px; box-sizing:border-box; color:#eee; overflow-y:auto;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #444; padding-bottom:10px;">
+                        <h3 style="margin:0; font-size:18px; color:#fff;">Media Viewer Help</h3>
+                        <button class="mw-close-help" style="background:none; border:none; color:#aaa; cursor:pointer; font-size:20px;"><i class="bi bi-x-lg"></i></button>
+                    </div>
+                    <div style="line-height:1.6; font-size:14px;">
+                        <p><strong><i class="bi bi-upload"></i> Upload Files:</strong> Click 'Upload' to save files (Images, Video, Audio, PDF) securely to your browser's local storage.</p>
+                        <p><strong><i class="bi bi-eye"></i> View:</strong> Click any file in the list to view it.</p>
+                        <p><strong><i class="bi bi-link-45deg"></i> URL Preview:</strong> Paste a URL (Website, YouTube, etc.) in the top bar and click 'Go'.</p>
+                        <p><strong><i class="bi bi-google"></i> Google Drive:</strong> Paste a Drive 'View' or 'Edit' link, and it will automatically convert to a previewable embed.</p>
+                        <p><strong><i class="bi bi-window-stack"></i> Window:</strong> Drag the header to move. Drag the bottom-right corner to resize. Click sidebar icon to toggle list.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="mw-resize-handle"></div>
+        `;
+
+        document.body.appendChild(win);
+
+        // Bring to front on click
+        win.addEventListener('mousedown', () => {
+            document.querySelectorAll('.media-window').forEach(w => w.classList.remove('active-window'));
+            win.classList.add('active-window');
+            win.style.zIndex = ++globalZIndex;
+        });
+
+        // Close
+        win.querySelector('.mw-btn.close').onclick = () => win.remove();
+        
+        // Help Logic
+        const helpOverlay = win.querySelector('.mw-help-overlay');
+        win.querySelector('.mw-btn.help-btn').onclick = () => {
+            helpOverlay.style.display = 'flex';
+        };
+        win.querySelector('.mw-close-help').onclick = () => {
+            helpOverlay.style.display = 'none';
+        };
+
+        // Collapse Sidebar
+        const sidebarEl = win.querySelector('.mw-sidebar');
+        win.querySelector('.mw-btn.collapse-side').onclick = () => {
+            sidebarEl.classList.toggle('collapsed');
+        };
+
+        // Drag Logic
+        const header = win.querySelector('.mw-header');
+        let isDragging = false;
+        let startX, startY, initialLeft, initialTop;
+
+        header.addEventListener('mousedown', (e) => {
+            if(e.target.closest('button')) return; // Ignore buttons
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            initialLeft = win.offsetLeft;
+            initialTop = win.offsetTop;
+            document.body.style.userSelect = 'none'; // Prevent selection
+            document.addEventListener('mousemove', onDrag);
+            document.addEventListener('mouseup', stopDrag);
+        });
+
+        function onDrag(e) {
+            if (!isDragging) return;
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            win.style.left = (initialLeft + dx) + 'px';
+            win.style.top = (initialTop + dy) + 'px';
+        }
+
+        function stopDrag() {
+            isDragging = false;
+            document.body.style.userSelect = '';
+            document.removeEventListener('mousemove', onDrag);
+            document.removeEventListener('mouseup', stopDrag);
+        }
+
+        // Resize Logic
+        const resizer = win.querySelector('.mw-resize-handle');
+        let isResizing = false;
+        let rStartX, rStartY, startW, startH;
+
+        resizer.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            rStartX = e.clientX;
+            rStartY = e.clientY;
+            startW = parseInt(document.defaultView.getComputedStyle(win).width, 10);
+            startH = parseInt(document.defaultView.getComputedStyle(win).height, 10);
+            document.addEventListener('mousemove', onResize);
+            document.addEventListener('mouseup', stopResize);
+            e.stopPropagation();
+        });
+
+        function onResize(e) {
+            if (!isResizing) return;
+            const w = startW + (e.clientX - rStartX);
+            const h = startH + (e.clientY - rStartY);
+            if (w > 400) win.style.width = w + 'px';
+            if (h > 300) win.style.height = h + 'px';
+        }
+
+        function stopResize() {
+            isResizing = false;
+            document.removeEventListener('mousemove', onResize);
+            document.removeEventListener('mouseup', stopResize);
+        }
+
+        // File Logic (Scoped to this window)
+        const listEl = document.getElementById(`${winId}-list`);
+        const viewEl = document.getElementById(`${winId}-view`);
+        const fileInput = document.getElementById(`${winId}-file-input`);
+        const btnUpload = document.getElementById(`${winId}-upload`);
+        
+        // Refresh List helper
+        const refreshList = async () => {
+            listEl.innerHTML = '';
+            const files = await LocalDB.getAll();
+            files.forEach(f => {
+                const item = document.createElement('div');
+                item.className = 'mw-item';
+                item.innerHTML = `<i class="bi bi-file-earmark"></i> <span style="flex:1; overflow:hidden; text-overflow:ellipsis;">${f.name}</span> <span class="del-btn" style="opacity:0.5;"><i class="bi bi-x"></i></span>`;
+                
+                // Click to view
+                item.onclick = (e) => {
+                    if(e.target.closest('.del-btn')) return;
+                    listEl.querySelectorAll('.mw-item').forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                    renderPreview(f, viewEl);
+                };
+
+                // Delete
+                item.querySelector('.del-btn').onclick = async () => {
+                    if(confirm(`Delete ${f.name}?`)) {
+                        await LocalDB.delete(f.id);
+                        // Refresh ALL open windows lists (using event would be better but simple loop works)
+                        document.querySelectorAll('.media-window').forEach(w => {
+                            // Find the refresh function attached or just re-trigger
+                            // For simplicity, we just refresh THIS window. 
+                            // *Improvement*: dispatch global event
+                            window.dispatchEvent(new Event('yuki-files-changed'));
+                        });
+                    }
+                };
+                listEl.appendChild(item);
+            });
+        };
+        
+        // Listen for global file changes to update this window
+        const onGlobalChange = () => refreshList();
+        window.addEventListener('yuki-files-changed', onGlobalChange);
+        
+        // Cleanup listener on close
+        const originalRemove = win.remove.bind(win);
+        win.remove = () => {
+            window.removeEventListener('yuki-files-changed', onGlobalChange);
+            originalRemove();
+        };
+
+        // Upload
+        btnUpload.onclick = () => fileInput.click();
+        fileInput.onchange = async (e) => {
+            if(e.target.files.length) {
+                for(let f of e.target.files) await LocalDB.saveFile(f);
+                window.dispatchEvent(new Event('yuki-files-changed')); // Update all windows
+                fileInput.value = '';
+            }
+        };
+
+        // URL Go
+        const btnGo = document.getElementById(`${winId}-go`);
+        const urlInput = document.getElementById(`${winId}-url-input`);
+        btnGo.onclick = () => {
+            const url = urlInput.value.trim();
+            if(url) {
+                let finalUrl = url;
+                if(url.includes('drive.google.com') && (url.includes('/view') || url.includes('/edit'))) {
+                     finalUrl = url.replace(/\/view.*$/, '/preview').replace(/\/edit.*$/, '/preview');
+                }
+                viewEl.innerHTML = '';
+                const iframe = document.createElement('iframe');
+                iframe.className = 'media-iframe';
+                iframe.src = finalUrl;
+                iframe.setAttribute('allowfullscreen', 'true');
+                viewEl.appendChild(iframe);
+            }
+        };
+
+        // Initial List Load
+        refreshList();
+    }
+
+    // Helper to render preview
+    function renderPreview(fileData, container) {
+        container.innerHTML = '';
+        const blobUrl = URL.createObjectURL(fileData.blob);
+        const type = fileData.type;
+
+        if(type.startsWith('image/')) {
+            const img = document.createElement('img');
+            img.src = blobUrl;
+            img.className = 'media-img';
+            container.appendChild(img);
+        } else if(type.startsWith('video/')) {
+            const vid = document.createElement('video');
+            vid.src = blobUrl;
+            vid.controls = true;
+            vid.className = 'media-video';
+            container.appendChild(vid);
+        } else if(type.startsWith('audio/')) {
+            const aud = document.createElement('audio');
+            aud.src = blobUrl;
+            aud.controls = true;
+            container.appendChild(aud);
+        } else if(type === 'application/pdf') {
+            const iframe = document.createElement('iframe');
+            iframe.src = blobUrl;
+            iframe.className = 'media-iframe';
+            container.appendChild(iframe);
+        } else {
+             container.innerHTML = `<div class="mw-placeholder">Unsupported type.<br><a href="${blobUrl}" download="${fileData.name}" style="color:#00C6FF">Download</a></div>`;
+        }
     }
 
     // Vivian Emotions (mapped from filenames)
